@@ -54,6 +54,17 @@ Phase 4 adds the project domain model:
 - `diffProjectStates` compares two reconstructed states for version comparison screens.
 - Domain tests cover event replay, invalid streams, and state comparison.
 
+## Phase 5 Scope
+
+Phase 5 adds the event store boundary:
+
+- Command services will append `ProjectEventDraft` values without assigning versions.
+- `ProjectEventStore.append` assigns event ids, timestamps, and contiguous per-project versions.
+- `expectedVersion` is checked inside the append operation and stale writes raise `EventStoreConcurrencyError`.
+- The Prisma implementation persists events in a transaction and relies on the unique `(projectId, version)` constraint as a final race-condition guard.
+- `ProjectCreated` also creates the relational `project` row used for ownership and project listing.
+- Reads always return events ordered by ascending `version`, optionally bounded by version or timestamp.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
