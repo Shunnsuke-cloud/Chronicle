@@ -1,17 +1,25 @@
-# Chronicle
+﻿# Chronicle
 
-Chronicleは、ソフトウェア開発における意思決定の背景をイベントソーシングで記録し、グラフとしてたどれるWebアプリケーションです。
+Chronicleは、ソフトウェア開発における意思決定の背景を記録するアプリケーションです。
 
-Gitが「コードの何を変更したか」を管理するのに対して、Chronicleは「なぜその判断をしたか」「どの選択肢を検討したか」「その後どのように変化したか」を管理します。
+Gitがコードの「何を変更したか」を管理するのに対して、Chronicleは「なぜその判断をしたか」「どの選択肢を検討したか」「あとから何が変わったか」を残します。
 
-## 主な機能
+## できること
 
-- メールアドレスとパスワードによる登録・ログイン
+- メールアドレスとパスワードによるアカウント登録・ログイン
 - プロジェクトごとの意思決定、選択肢、判断理由、状態の記録
-- 依存・競合・置換・関連といった意思決定間の関係管理
-- すべての変更を上書きせず、イベントとして追記保存
-- 指定したバージョン時点の状態復元と、現在との比較
+- 依存、競合、置換、関連といった意思決定同士の関係管理
 - React Flowによる意思決定グラフの可視化
+- すべての変更をイベントとして追記保存
+- 過去バージョンの状態復元と、現在との差分比較
+
+## 設計の考え方
+
+プロジェクトの状態は上書きしません。変更はすべて`event`テーブルへ追記し、プロジェクトごとに連続した`version`を付与します。
+
+書き込み側はコマンドとして入力・認可・楽観ロックを検証してイベントを追加します。読み取り側はイベントを順番に適用して、現在または指定時点の状態、比較結果、グラフを再構築します。
+
+認証データはBetter Authが通常のリレーショナルデータとして管理し、イベントソーシングの対象には含めません。
 
 ## 技術構成
 
@@ -21,30 +29,33 @@ Gitが「コードの何を変更したか」を管理するのに対して、Ch
 - Prisma / Neon PostgreSQL
 - React Flow
 - Vitest
-- Vercel
+- Render / Docker
 
-## ローカル開発
+## ローカルで起動する
 
-必要なものは Node.js 22以上、npm、Neon PostgreSQLのデータベースです。
+Node.js 22以上、npm、Neon PostgreSQLのデータベースが必要です。
 
-1. `npm ci` で依存関係をインストールします。
-2. `.env.example` を参照して `.env.local` に環境変数を設定します。接続文字列や秘密情報はGitへ追加しません。
-3. `npm run prisma:deploy` で初期スキーマを適用します。
-4. `npm run dev` で開発サーバーを起動します。
+```sh
+npm ci
+npm run prisma:deploy
+npm run dev
+```
 
-`http://localhost:3000` を開き、新しいアカウントを登録できます。
+環境変数は`.env.example`を参照して`.env.local`へ設定してください。接続文字列や認証シークレットはGitへ追加しません。
 
-## 環境変数
+起動後は`http://localhost:3000`を開き、新しいアカウントを登録できます。
 
-| 変数名 | 必須 | 用途 |
-| --- | --- | --- |
-| `DATABASE_URL` | はい | Neon PostgreSQLの接続文字列 |
-| `BETTER_AUTH_SECRET` | はい | 認証データの署名に使う十分に長いランダム値 |
-| `BETTER_AUTH_URL` | はい | アプリケーションの正規URL |
-| `NEXT_PUBLIC_APP_URL` | はい | ブラウザ側Better Authクライアントが使う公開URL |
-| `SHADOW_DATABASE_URL` | 開発時 | Prismaの開発用ワークフローで使う別DBまたはNeonブランチ |
+## 必要な環境変数
 
-## コマンド
+| 変数名 | 用途 |
+| --- | --- |
+| `DATABASE_URL` | Neon PostgreSQLの接続文字列 |
+| `BETTER_AUTH_SECRET` | 認証データの署名に使う十分に長いランダム値 |
+| `BETTER_AUTH_URL` | アプリケーションの正規URL |
+| `NEXT_PUBLIC_APP_URL` | ブラウザ側Better Authクライアントが使う公開URL |
+| `SHADOW_DATABASE_URL` | Prismaの開発用ワークフローで使う別DBまたはNeonブランチ（任意） |
+
+## よく使うコマンド
 
 | コマンド | 内容 |
 | --- | --- |
@@ -52,29 +63,25 @@ Gitが「コードの何を変更したか」を管理するのに対して、Ch
 | `npm run prisma:deploy` | コミット済みマイグレーションを適用 |
 | `npm run prisma:migrate` | 開発用マイグレーションを作成 |
 | `npm test` | 単体テストを実行 |
-| `npm run typecheck` | TypeScript strictモードの型検査 |
+| `npm run typecheck` | TypeScriptの型検査を実行 |
 | `npm run lint` | ESLintを実行 |
 | `npm run build` | 本番ビルドを作成 |
 
-## 設計
+## Renderへ配備する
 
-認証情報はBetter Authが通常のリレーショナルデータとして管理します。一方、プロジェクトの意思決定は上書きしません。`event`テーブルへ追記したイベントをバージョン順に適用し、現在または過去の状態を再構築します。
+このリポジトリにはRender Blueprintの`render.yaml`が含まれています。
 
-書き込み側はコマンドとして入力値・認可・楽観ロックを検証してからイベントを追加します。読み取り側はイベントをリプレイして状態・比較結果・グラフを返します。
+1. Renderで**New > Blueprint**を選び、このGitHubリポジトリを接続します。
+2. `DATABASE_URL`、`BETTER_AUTH_URL`、`NEXT_PUBLIC_APP_URL`をRenderのEnvironment Variablesへ設定します。
+3. Renderの公開URLを、URL系の2つの環境変数へ設定して再デプロイします。
+4. `https://<your-service>.onrender.com/api/health`が200を返すことを確認します。
 
-## Dockerによるセルフホスト
+詳細は[Render配備ガイド](docs/render-deployment.md)を参照してください。
 
-Vercelを使えない場合でも、Docker Composeが動く環境なら起動できます。DBマイグレーションを適用してから、アプリコンテナを起動します。
+## ドキュメント
 
-```sh
-docker compose --profile migration run --rm migrate
-docker compose up --build -d app
-```
+- [アーキテクチャ](docs/architecture.md)
+- [データベース設定](docs/database.md)
+- [Render配備](docs/render-deployment.md)
+- [Dockerセルフホスト](docs/self-hosting.md)
 
-詳しくは[アーキテクチャ](docs/architecture.md)、[データベース設定](docs/database.md)、[Vercel配備](docs/deployment.md)、[Dockerセルフホスト](docs/self-hosting.md)を参照してください。
-
-## Renderへの配備
-
-Vercelを使わず公開する場合は、RenderのDocker Web Serviceとして配備できます。リポジトリに含まれる`render.yaml`を使ってBlueprintを作成し、Neon接続文字列と公開URLをRenderの環境変数へ設定します。
-
-具体的な設定は[Render配備](docs/render-deployment.md)を参照してください。
