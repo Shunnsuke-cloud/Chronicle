@@ -3,4 +3,4 @@ export function isDatabaseConfigured() {
 }
 
 export const databaseConfigurationMessage =
-  "データベースが未設定です。Neon PostgreSQL の DATABASE_URL を設定してから npm run prisma:deploy を実行してください。";
+  "Database is not configured. Set DATABASE_URL to your Neon PostgreSQL connection string, then run npm run prisma:deploy.";

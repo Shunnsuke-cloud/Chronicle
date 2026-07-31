@@ -4,7 +4,7 @@ Chronicle uses Neon PostgreSQL through Prisma.
 
 ## Environment
 
-Create `.env` from `.env.example` and set:
+Create `.env.local` using `.env.example` as the field reference, then set:
 
 ```txt
 DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
@@ -26,7 +26,7 @@ npm run prisma:migrate
 npm run prisma:validate
 ```
 
-Use `npm run prisma:deploy` on Vercel or other deployment environments.
+Use `npm run prisma:deploy` from the approved migration workflow or another controlled deployment step. Do not run migrations automatically from preview builds.
 
 ## Tables
 

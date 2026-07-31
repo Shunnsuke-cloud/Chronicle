@@ -113,6 +113,27 @@ Phase 9 provides the authenticated Chronicle workspace:
 
 - The entry, authentication, and application surfaces share a restrained blue-green operational palette with readable line lengths and consistent form states.
 - Authentication requires a configured `DATABASE_URL`. When it is absent, `/api/auth/*` responds with a clear `503 DATABASE_NOT_CONFIGURED` response instead of attempting an unavailable local database connection.
+- Prisma CLI loads `.env.local` before `.env` and refuses to use a localhost fallback when `DATABASE_URL` is missing.
+
+## Phase 10 Scope
+
+Phase 10 strengthens delivery quality:
+
+- All project API failures use a consistent JSON error envelope, including HTTP boundary errors and optimistic concurrency conflicts.
+- Project API responses use `Cache-Control: no-store`, `Referrer-Policy: same-origin`, and `X-Content-Type-Options: nosniff`.
+- HTTP request parsing and error mapping are covered by focused unit tests.
+- `.github/workflows/ci.yml` runs type checking, linting, tests, Prisma schema validation, and a production build for pushes and pull requests.
+
+## Phase 11 Scope
+
+Phase 11 makes Chronicle ready for Vercel delivery:
+
+- Production response headers are configured in `next.config.ts`.
+- `prisma generate` runs before every production build.
+- Database migration is a separate, manually dispatched GitHub Actions workflow protected by the `production` environment.
+- Deployment instructions document the required Vercel variables, migration order, and operational checks.
+- Docker Compose provides a Vercel-independent deployment path, with migrations executed as an explicit separate command.
+- `render.yaml` supports a Render Docker Web Service deployment with a health check and externally configured secrets.
 
 ## Core Decisions
 

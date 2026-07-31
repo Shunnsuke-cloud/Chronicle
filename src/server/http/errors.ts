@@ -14,7 +14,15 @@ import { AppError } from "@/lib/errors";
 
 export function toErrorResponse(error: unknown, c: Context) {
   if (error instanceof HTTPException) {
-    return error.getResponse();
+    return c.json(
+      {
+        error: {
+          code: `HTTP_${error.status}`,
+          message: error.message,
+        },
+      },
+      error.status,
+    );
   }
 
   if (

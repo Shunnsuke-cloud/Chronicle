@@ -1,0 +1,20 @@
+services:
+  app:
+    build:
+      context: .
+      target: runtime
+    env_file:
+      - .env.local
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      target: build
+    env_file:
+      - .env.local
+    command: npm run prisma:deploy
+    profiles:
+      - migration
