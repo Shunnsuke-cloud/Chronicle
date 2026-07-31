@@ -76,6 +76,17 @@ Phase 6 adds command services:
 - Command results include both appended events and the rebuilt project state.
 - Stale writes are surfaced through `EventStoreConcurrencyError`.
 
+## Phase 7 Scope
+
+Phase 7 adds query services:
+
+- Query services read events and rebuild state with the domain reducer.
+- Project listing reads the relational `project` table through a `ProjectReader` port.
+- Read authorization checks project ownership before returning events, state, comparisons, or graph data.
+- `getProjectStateAtVersion` supports historical reconstruction by event version.
+- `compareProjectVersions` produces a `ProjectDiff` between two rebuilt states.
+- `getProjectGraph` returns React Flow compatible nodes and edges without coupling React components to domain logic.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
