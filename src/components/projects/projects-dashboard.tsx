@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { FolderPlus, History, Plus, Sparkles } from "lucide-react";
+import { FolderPlus, Plus, Sparkles } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BrandLogo } from "@/components/brand-logo";
 import { projectApi, type ProjectListItem } from "@/lib/project-api";
 
 export function ProjectsDashboard({ email }: { email: string }) {
@@ -52,10 +53,7 @@ export function ProjectsDashboard({ email }: { email: string }) {
     <main className="min-h-screen bg-[#f6f7f3] text-neutral-950">
       <header className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-5 px-6 py-4">
-          <Link href="/projects" className="flex items-center gap-2 font-semibold tracking-tight">
-            <span className="grid size-8 place-items-center bg-emerald-600 text-white"><History size={17} /></span>
-            Chronicle
-          </Link>
+          <BrandLogo className="scale-[0.72] origin-left" />
           <div className="flex items-center gap-4 text-sm text-neutral-600">
             <span className="hidden sm:block">{email}</span>
             <SignOutButton />

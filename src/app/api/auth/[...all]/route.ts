@@ -13,7 +13,7 @@ function withDatabaseConfiguration<Handler extends (...args: never[]) => Respons
   return async (...args: Parameters<Handler>) => {
     if (!isDatabaseConfigured()) {
       return Response.json(
-        { error: { code: "DATABASE_NOT_CONFIGURED", message: databaseConfigurationMessage } },
+        { code: "DATABASE_NOT_CONFIGURED", message: databaseConfigurationMessage },
         { status: 503 },
       );
     }
