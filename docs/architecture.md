@@ -43,6 +43,17 @@ Phase 3 establishes the database baseline:
 
 Migrations should be applied with `npm run prisma:migrate` in development and `npm run prisma:deploy` in deployment environments.
 
+## Phase 4 Scope
+
+Phase 4 adds the project domain model:
+
+- Project events are represented as a TypeScript discriminated union.
+- `ProjectState` is rebuilt only by applying ordered events.
+- `reduceProjectEvents` is a pure function with no framework, API, or database dependency.
+- Reducer invariants reject missing versions, duplicate creates, unknown decisions, unknown alternatives, unknown relations, cross-project events, and self-relations.
+- `diffProjectStates` compares two reconstructed states for version comparison screens.
+- Domain tests cover event replay, invalid streams, and state comparison.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
