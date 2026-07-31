@@ -5,29 +5,6 @@ import { getCurrentSession } from "@/server/auth/session";
 
 export default async function RegisterPage() {
   const session = await getCurrentSession();
-
-  if (session) {
-    redirect("/projects");
-  }
-
-  return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
-      <p className="text-sm font-semibold uppercase tracking-wide text-emerald-700">
-        Chronicle
-      </p>
-      <h1 className="mt-3 text-3xl font-semibold text-neutral-950">
-        Create account
-      </h1>
-      <p className="mt-3 text-sm leading-6 text-neutral-600">
-        Start preserving decision context before it disappears from memory.
-      </p>
-      <AuthForm mode="register" />
-      <p className="mt-6 text-sm text-neutral-600">
-        Already have an account?{" "}
-        <Link href="/login" className="font-medium text-neutral-950 underline">
-          Log in
-        </Link>
-      </p>
-    </main>
-  );
+  if (session) redirect("/projects");
+  return <main className="min-h-screen bg-[#f5f7f7] px-6 py-12"><div className="mx-auto flex min-h-[calc(100vh-6rem)] w-full max-w-md flex-col justify-center"><Link href="/" className="text-sm font-semibold text-[#176b67]">Chronicle</Link><h1 className="mt-4 text-3xl font-semibold tracking-tight text-[#182323]">アカウントを作成</h1><p className="mt-3 max-w-sm text-sm leading-7 text-[#526161]">意思決定の理由を、あとから迷わずたどれる形で残します。</p><AuthForm mode="register" /><p className="mt-6 text-sm text-[#526161]">すでにアカウントをお持ちですか？ <Link href="/login" className="font-medium text-[#176b67] underline underline-offset-4">ログイン</Link></p></div></main>;
 }

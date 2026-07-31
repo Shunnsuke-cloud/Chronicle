@@ -109,6 +109,11 @@ Phase 9 provides the authenticated Chronicle workspace:
 - The event timeline offers reconstruction comparisons between a historical version and the current version.
 - React Flow renders the query-side graph projection. Node placement remains a read-model concern, not persisted domain state.
 
+## UI Refinement
+
+- The entry, authentication, and application surfaces share a restrained blue-green operational palette with readable line lengths and consistent form states.
+- Authentication requires a configured `DATABASE_URL`. When it is absent, `/api/auth/*` responds with a clear `503 DATABASE_NOT_CONFIGURED` response instead of attempting an unavailable local database connection.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
