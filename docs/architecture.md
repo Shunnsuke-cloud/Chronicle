@@ -87,6 +87,18 @@ Phase 7 adds query services:
 - `compareProjectVersions` produces a `ProjectDiff` between two rebuilt states.
 - `getProjectGraph` returns React Flow compatible nodes and edges without coupling React components to domain logic.
 
+## Phase 8 Scope
+
+Phase 8 connects the application layer to HTTP:
+
+- Hono routes are mounted under `/api` through the Next.js catch-all route.
+- `/api/auth/*` remains owned by Better Auth.
+- Project APIs require a Better Auth session and use the session user id as `actorId`.
+- API handlers do not contain domain mutation logic; they delegate to command and query services.
+- Request bodies are parsed as JSON objects, then validated by command zod schemas in the application layer.
+- Route params and query params are validated at the HTTP boundary.
+- Application errors are mapped to stable HTTP status codes, including `409 Conflict` for version races.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
