@@ -65,6 +65,17 @@ Phase 5 adds the event store boundary:
 - `ProjectCreated` also creates the relational `project` row used for ownership and project listing.
 - Reads always return events ordered by ascending `version`, optionally bounded by version or timestamp.
 
+## Phase 6 Scope
+
+Phase 6 adds command services:
+
+- API handlers will call `ProjectCommandService` rather than writing domain logic directly.
+- Commands are validated with zod schemas before event creation.
+- Non-create commands load current state from events and require `state.ownerId === actorId`.
+- Commands generate event drafts only; the event store assigns ids, timestamps, and versions.
+- Command results include both appended events and the rebuilt project state.
+- Stale writes are surfaced through `EventStoreConcurrencyError`.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
