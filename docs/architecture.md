@@ -99,6 +99,16 @@ Phase 8 connects the application layer to HTTP:
 - Route params and query params are validated at the HTTP boundary.
 - Application errors are mapped to stable HTTP status codes, including `409 Conflict` for version races.
 
+## Phase 9 Scope
+
+Phase 9 provides the authenticated Chronicle workspace:
+
+- `/projects` lists owned projects and appends a `ProjectCreated` event through the API.
+- `/projects/[projectId]` edits decisions, alternatives, status, reasons, and relations only through command endpoints.
+- The workspace sends the current project version as `expectedVersion`; a `409 Conflict` reloads the latest event-derived state.
+- The event timeline offers reconstruction comparisons between a historical version and the current version.
+- React Flow renders the query-side graph projection. Node placement remains a read-model concern, not persisted domain state.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.
