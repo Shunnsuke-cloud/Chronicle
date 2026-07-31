@@ -31,6 +31,18 @@ Phase 2 adds the authentication foundation:
 
 Auth records remain normal relational rows. They are intentionally not included in the Chronicle event stream.
 
+## Phase 3 Scope
+
+Phase 3 establishes the database baseline:
+
+- Prisma is configured for PostgreSQL with Prisma 7 driver adapters.
+- Runtime database access uses `@prisma/adapter-pg`.
+- The initial migration creates Better Auth tables plus Chronicle `project` and `event` tables.
+- `event` keeps append-only project event streams with a unique `(projectId, version)` constraint.
+- Neon should be configured through `DATABASE_URL` with SSL enabled.
+
+Migrations should be applied with `npm run prisma:migrate` in development and `npm run prisma:deploy` in deployment environments.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.

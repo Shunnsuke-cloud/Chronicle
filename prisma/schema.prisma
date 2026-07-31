@@ -78,6 +78,7 @@ model Project {
   events      Event[]
 
   @@index([ownerId])
+  @@map("project")
 }
 
 model Event {
@@ -96,4 +97,5 @@ model Event {
   @@index([projectId, version])
   @@index([projectId, occurredAt])
   @@index([actorId])
+  @@map("event")
 }
