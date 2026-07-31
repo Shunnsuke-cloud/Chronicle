@@ -17,6 +17,20 @@ This phase establishes the project foundation:
 
 Feature implementation begins in later phases.
 
+## Phase 2 Scope
+
+Phase 2 adds the authentication foundation:
+
+- Better Auth server configuration in `src/server/auth/auth.ts`
+- Prisma adapter backed by the existing Better Auth tables
+- Next.js auth route at `/api/auth/*`
+- Email/password registration and login pages
+- Client-side Better Auth helper in `src/lib/auth-client.ts`
+- Server-side session helper in `src/server/auth/session.ts`
+- Protected `/projects` page with logout
+
+Auth records remain normal relational rows. They are intentionally not included in the Chronicle event stream.
+
 ## Core Decisions
 
 - Authentication data is stored normally through Better Auth and is not event sourced.

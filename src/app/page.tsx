@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { getCurrentSession } from "@/server/auth/session";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getCurrentSession();
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-16">
       <div className="max-w-3xl">
@@ -15,11 +18,19 @@ export default function HomePage() {
         </p>
         <div className="mt-10 flex gap-3">
           <Link
-            href="/projects"
+            href={session ? "/projects" : "/login"}
             className="inline-flex items-center justify-center rounded-md bg-neutral-950 px-5 py-3 text-sm font-medium text-white"
           >
-            Open projects
+            {session ? "Open projects" : "Log in"}
           </Link>
+          {!session ? (
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-white px-5 py-3 text-sm font-medium text-neutral-900"
+            >
+              Create account
+            </Link>
+          ) : null}
         </div>
       </div>
     </main>
