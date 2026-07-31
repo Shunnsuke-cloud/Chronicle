@@ -4,6 +4,10 @@ Chronicleは、ソフトウェア開発における意思決定の背景を記�
 
 Gitがコードの「何を変更したか」を管理するのに対して、Chronicleは「なぜその判断をしたか」「どの選択肢を検討したか」「あとから何が変わったか」を残します。
 
+## 公開URL
+
+[https://chronicle-v2i4.onrender.com/](https://chronicle-v2i4.onrender.com/)
+
 ## できること
 
 - メールアドレスとパスワードによるアカウント登録・ログイン
@@ -84,4 +88,5 @@ npm run dev
 - [データベース設定](docs/database.md)
 - [Render配備](docs/render-deployment.md)
 - [Dockerセルフホスト](docs/self-hosting.md)
+
 
