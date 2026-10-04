@@ -1,4 +1,4 @@
-﻿# Chronicle
+# Chronicle
 
 Chronicleは、ソフトウェア開発における意思決定の背景を記録するアプリケーションです。
 
@@ -56,7 +56,6 @@ npm run dev
 | `DATABASE_URL` | Neon PostgreSQLの接続文字列 |
 | `BETTER_AUTH_SECRET` | 認証データの署名に使う十分に長いランダム値 |
 | `BETTER_AUTH_URL` | アプリケーションの正規URL |
-| `NEXT_PUBLIC_APP_URL` | ブラウザ側Better Authクライアントが使う公開URL |
 | `SHADOW_DATABASE_URL` | Prismaの開発用ワークフローで使う別DBまたはNeonブランチ（任意） |
 
 ## よく使うコマンド
@@ -76,8 +75,7 @@ npm run dev
 このリポジトリにはRender Blueprintの`render.yaml`が含まれています。
 
 1. Renderで**New > Blueprint**を選び、このGitHubリポジトリを接続します。
-2. `DATABASE_URL`、`BETTER_AUTH_URL`、`NEXT_PUBLIC_APP_URL`をRenderのEnvironment Variablesへ設定します。
-3. Renderの公開URLを、URL系の2つの環境変数へ設定して再デプロイします。
+3. Renderの公開URLを、BETTER_AUTH_URLへ設定して再デプロイします。
 4. `https://<your-service>.onrender.com/api/health`が200を返すことを確認します。
 
 詳細は[Render配備ガイド](docs/render-deployment.md)を参照してください。
@@ -90,3 +88,16 @@ npm run dev
 - [Dockerセルフホスト](docs/self-hosting.md)
 
 
+
+
+## 認証・DB接続の運用
+
+`src/lib/env.ts`で設定を検証し、未設定・不正な設定は起動時に停止します。開発環境も`DATABASE_URL`、`BETTER_AUTH_URL`、32文字以上のランダムな`BETTER_AUTH_SECRET`が必須です。本番の認証URLは公開HTTPSオリジンを指定してください。固定シークレットやダミーDBへの実行時フォールバックはありません。ブラウザの認証クライアントは現在のオリジンを利用します。
+
+RenderではEnvironmentにNeonから取得した`DATABASE_URL`（`sslmode=require`を保持）と公開URLの`BETTER_AUTH_URL`を設定します。Blueprintは`BETTER_AUTH_SECRET`を生成します。既存サービスでは3変数が実際に設定されていることを確認してください。URLやシークレットの実値はログ・Git・Dockerビルド引数へ出さないでください。
+
+Prisma Clientは`@prisma/adapter-pg`経由でTCP接続します。ランタイムにはNeonのpooler URLを利用でき、Prisma CLIには任意の`DIRECT_URL`で直接接続を指定できます。接続待ちは10秒、プールは最大10接続です。接続不能の場合はNeonの稼働状態、URL、認証情報、Renderからのネットワーク接続を確認してください。
+
+本番配備は`npm ci` → `npm run prisma:generate` → `npm run prisma:deploy` → アプリ起動の順で行います。`npm run build`のprebuildでもClientを生成しますが、マイグレーションは実行しません。RenderのDockerランタイムにはPrisma CLIを含めないため、リリース前にCIまたは管理端末から対象DBへ`prisma:deploy`を実行してください。Dockerのビルド専用値はRUN内だけで使われ、実行時の設定にはなりません。
+
+`/api/health`は`SELECT 1`でDB疎通を確認し、正常時200、DB障害時503を返します（テーブルやマイグレーションの検証は別途必要）。認証の内部500・DB障害は利用者向けの503に変換し、入力・認証情報のエラーはBetter Authの応答を保持します。内部ログは処理名とエラー分類のみで、SQL・接続文字列・パスワード・メール・スタックを記録しません。

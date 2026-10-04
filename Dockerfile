@@ -7,10 +7,8 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-ARG NEXT_PUBLIC_APP_URL=http://localhost:3000
-ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 # Prisma Client generation and Next.js compilation do not need the production database.
-RUN DATABASE_URL="postgresql://build:build@localhost:5432/chronicle" npm run build
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/chronicle" BETTER_AUTH_URL="https://build.invalid" BETTER_AUTH_SECRET="build-only-secret-never-used-at-runtime-0123456789" npm run build
 
 FROM node:22-alpine AS runtime
 WORKDIR /app

@@ -19,11 +19,10 @@ Set these values in the Render service Environment page:
 | --- | --- |
 | `DATABASE_URL` | Neon PostgreSQL connection string with SSL enabled |
 | `BETTER_AUTH_URL` | Render service URL, for example `https://chronicle.onrender.com` |
-| `NEXT_PUBLIC_APP_URL` | The same public Render service URL |
+| `DIRECT_URL` | Optional non-pooler Neon URL for migration jobs; omit to use DATABASE_URL |
 
 Render generates `BETTER_AUTH_SECRET` from `render.yaml`. Replace it only through the Render dashboard when intentionally rotating authentication sessions.
 
-`NEXT_PUBLIC_APP_URL` is available during the Docker build because the browser auth client needs the public URL in its compiled bundle.
 
 ## 3. Apply Migrations
 
@@ -37,7 +36,7 @@ The GitHub Actions `Database Migrate` workflow is also suitable after its `DATAB
 
 ## 4. Verify
 
-- Open `https://your-service.onrender.com/api/health` and confirm a 200 response.
+- Open `https://your-service.onrender.com/api/health` and confirm a 200 response with `database: reachable`. DB failures return 503.
 - Open the root page, register an account, and sign in.
 - Create a project and verify an event is recorded.
 

@@ -5,9 +5,8 @@ Chronicle can run without Vercel on any machine that supports Docker Compose. Ne
 ## Requirements
 
 - Docker Engine and Docker Compose
-- A configured `.env.local` containing `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, and `NEXT_PUBLIC_APP_URL`
 
-For a server deployment, set the two application URL values to the public HTTPS domain. For a local machine, use `http://localhost:3000`.
+For a server deployment, set BETTER_AUTH_URL to the public HTTPS domain. For a local machine, use `http://localhost:3000`.
 
 ## Start
 

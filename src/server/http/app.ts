@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { createProjectRoutes } from "@/server/http/routes/projects";
 import { toErrorResponse } from "@/server/http/errors";
+import { prisma } from "@/server/db/prisma";
+import { logServerError } from "@/server/http/server-error";
 import {
   projectCommandService,
   projectQueryService,
@@ -17,11 +19,14 @@ httpApp.use("*", async (c, next) => {
 
 httpApp.onError((error, c) => toErrorResponse(error, c));
 
-httpApp.get("/health", (c) => {
-  return c.json({
-    ok: true,
-    service: "chronicle",
-  });
+httpApp.get("/health", async (c) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return c.json({ ok: true, service: "chronicle", database: "reachable" });
+  } catch (error) {
+    logServerError("health_database", error);
+    return c.json({ ok: false, service: "chronicle", database: "unavailable" }, 503);
+  }
 });
 
 httpApp.route(

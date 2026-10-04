@@ -9,12 +9,13 @@ Create `.env.local` using `.env.example` as the field reference, then set:
 ```txt
 DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
 SHADOW_DATABASE_URL="postgresql://user:password@host/shadow_database?sslmode=require"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
 BETTER_AUTH_URL="http://localhost:3000"
 BETTER_AUTH_SECRET="replace-with-a-long-random-secret"
 ```
 
-`BETTER_AUTH_SECRET` must be replaced with a long random value before production.
+`BETTER_AUTH_SECRET` must be generated randomly (at least 32 characters) in every environment. Placeholder values are rejected. Production requires an HTTPS `BETTER_AUTH_URL`.
+
+Runtime uses `@prisma/adapter-pg` and the Neon TCP/pooler `DATABASE_URL`, retaining `sslmode=require`. Optionally set `DIRECT_URL` to the non-pooler URL for Prisma CLI commands. CLI validation reports only configuration keys, never connection values.
 
 `SHADOW_DATABASE_URL` is optional for simple deploys, but Prisma requires it for some migration diff and development workflows. Use a separate Neon database or branch for it.
 
