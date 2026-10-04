@@ -13,7 +13,20 @@ export function isDatabaseUnavailable(error: unknown, depth = 0): boolean {
 export function logServerError(operation: string, error: unknown) {
   // Never serialize messages, stacks, SQL, requests, or adapter metadata.
   console.error(JSON.stringify({ event: "server_error", operation,
-    category: isDatabaseUnavailable(error) ? "database_unavailable" : "internal_error" }));
+    category: isDatabaseUnavailable(error) ? "database_unavailable" : "internal_error",
+    ...safeDatabaseDetails(error) }));
+}
+
+export function safeDatabaseDetails(error: unknown, depth = 0): { code?: string; kind?: string } {
+  if (!error || typeof error !== "object" || depth > 5) return {};
+  const value = error as { code?: unknown; kind?: unknown; cause?: unknown; meta?: { driverAdapterError?: unknown } };
+  const kinds = ["DatabaseNotReachable", "ConnectionClosed", "SocketTimeout", "TlsConnectionError", "AuthenticationFailed", "DatabaseDoesNotExist"];
+  return {
+    ...safeDatabaseDetails(value.cause, depth + 1),
+    ...safeDatabaseDetails(value.meta?.driverAdapterError, depth + 1),
+    ...(typeof value.code === "string" && databaseCodes.has(value.code) ? { code: value.code } : {}),
+    ...(typeof value.kind === "string" && kinds.includes(value.kind) ? { kind: value.kind } : {}),
+  };
 }
 
 export function authUnavailableResponse() {

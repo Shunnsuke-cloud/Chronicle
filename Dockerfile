@@ -19,6 +19,7 @@ RUN addgroup --system --gid 1001 chronicle && adduser --system --uid 1001 chroni
 COPY --from=build --chown=chronicle:chronicle /app/public ./public
 COPY --from=build --chown=chronicle:chronicle /app/.next/standalone ./
 COPY --from=build --chown=chronicle:chronicle /app/.next/static ./.next/static
+COPY --from=build --chown=chronicle:chronicle /app/scripts/check-db.mjs ./scripts/check-db.mjs
 USER chronicle
 EXPOSE 3000
 CMD ["node", "server.js"]

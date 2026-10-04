@@ -11,7 +11,7 @@ describe("safe server errors", () => {
   it("logs only safe fields", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => {});
     logServerError("auth_sign_in", { code: "P1001", message: "postgresql://secret", query: "SELECT private" });
-    expect(spy).toHaveBeenCalledWith(JSON.stringify({ event: "server_error", operation: "auth_sign_in", category: "database_unavailable" }));
+    expect(spy).toHaveBeenCalledWith(JSON.stringify({ event: "server_error", operation: "auth_sign_in", category: "database_unavailable", code: "P1001" }));
   });
   it("returns a retryable authentication error without internal details", async () => {
     const response = authUnavailableResponse();

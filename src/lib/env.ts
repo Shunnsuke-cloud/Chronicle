@@ -6,8 +6,13 @@ export const databaseUrlSchema = z.string().trim().url().superRefine((value, ctx
   if (!["postgres:", "postgresql:"].includes(url.protocol) || !url.hostname || url.pathname.length < 2) {
     ctx.addIssue({ code: "custom", message: "Expected a PostgreSQL connection URL." });
   }
+});
+
+export const runtimeDatabaseUrlSchema = databaseUrlSchema.superRefine((value, ctx) => {
+  if (!URL.canParse(value)) return;
+  const url = new URL(value);
   if (url.hostname.endsWith(".neon.tech") && !["require", "verify-ca", "verify-full"].includes(url.searchParams.get("sslmode") ?? "")) {
-    ctx.addIssue({ code: "custom", message: "Neon requires SSL." });
+    ctx.addIssue({ code: "custom", message: "Neon runtime connections require sslmode=require or certificate verification." });
   }
 });
 
@@ -15,7 +20,7 @@ export function parseServerEnv(input: Record<string, string | undefined>) {
   const production = input.NODE_ENV === "production";
   const schema = z.object({
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
-    DATABASE_URL: databaseUrlSchema,
+    DATABASE_URL: runtimeDatabaseUrlSchema,
     BETTER_AUTH_SECRET: z.string().min(32).refine(
       (value) => !/^(replace|development-secret|change-me)/i.test(value),
     ),

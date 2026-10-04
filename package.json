@@ -4,6 +4,7 @@
   "private": true,
   "description": "Chronicle records software decision history as an event-sourced graph.",
   "scripts": {
+    "db:check": "node scripts/check-db.mjs",
     "dev": "next dev",
     "prebuild": "prisma generate",
     "build": "next build",
