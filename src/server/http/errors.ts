@@ -11,6 +11,7 @@ import {
 } from "@/application/queries";
 import { EventStoreConcurrencyError } from "@/infrastructure/event-store";
 import { AppError } from "@/lib/errors";
+import { isDatabaseUnavailable, logServerError } from "./server-error";
 
 export function toErrorResponse(error: unknown, c: Context) {
   if (error instanceof HTTPException) {
@@ -55,16 +56,16 @@ export function toErrorResponse(error: unknown, c: Context) {
     return c.json(toBody(error), 400);
   }
 
-  console.error(error);
+  logServerError("http_api", error);
 
   return c.json(
     {
       error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Unexpected server error.",
+        code: isDatabaseUnavailable(error) ? "SERVICE_UNAVAILABLE" : "INTERNAL_SERVER_ERROR",
+        message: isDatabaseUnavailable(error) ? "Service temporarily unavailable." : "Unexpected server error.",
       },
     },
-    500,
+    isDatabaseUnavailable(error) ? 503 : 500,
   );
 }
 

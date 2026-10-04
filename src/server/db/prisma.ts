@@ -1,18 +1,16 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import { getServerEnv } from "@/lib/env";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-const connectionString =
-  process.env.DATABASE_URL ??
-  "postgresql://invalid:invalid@localhost:5432/database-not-configured";
+const env = getServerEnv();
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL, connectionTimeoutMillis: 10000, max: 10, idleTimeoutMillis: 30000, statement_timeout: 10000 });
 
-const adapter = new PrismaPg({ connectionString });
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter, log: [] });
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
-
-if (process.env.NODE_ENV !== "production") {
+if (env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }

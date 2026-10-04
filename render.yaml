@@ -15,5 +15,5 @@ services:
         generateValue: true
       - key: BETTER_AUTH_URL
         sync: false
-      - key: NEXT_PUBLIC_APP_URL
+      - key: DIRECT_URL
         sync: false
